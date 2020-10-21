@@ -511,6 +511,7 @@ function baseCreateRenderer(
             optimized
           )
         } else if (shapeFlag & ShapeFlags.COMPONENT) {
+          //init run here 初始化是传入的是COMPONENT类型
           processComponent(
             n1,
             n2,
@@ -1209,6 +1210,7 @@ function baseCreateRenderer(
     optimized: boolean
   ) => {
     if (n1 == null) {
+      // init run here
       if (n2.shapeFlag & ShapeFlags.COMPONENT_KEPT_ALIVE) {
         ;(parentComponent!.ctx as KeepAliveContext).activate(
           n2,
@@ -1218,6 +1220,7 @@ function baseCreateRenderer(
           optimized
         )
       } else {
+        // 初始化走挂载流程
         mountComponent(
           n2,
           container,
@@ -1229,6 +1232,7 @@ function baseCreateRenderer(
         )
       }
     } else {
+      // 之后调用更新流程
       updateComponent(n1, n2, optimized)
     }
   }
@@ -2196,12 +2200,16 @@ function baseCreateRenderer(
     return hostNextSibling((vnode.anchor || vnode.el)!)
   }
 
+  // 转换vnode 为dom 添加到container
+  // 传给实例的mount方法里执行
   const render: RootRenderFunction = (vnode, container) => {
     if (vnode == null) {
       if (container._vnode) {
         unmount(container._vnode, null, null, true)
       }
     } else {
+      //init
+      // 更新 补丁函数
       patch(container._vnode || null, vnode, container)
     }
     flushPostFlushCbs()
@@ -2233,7 +2241,7 @@ function baseCreateRenderer(
   return {
     render,
     hydrate,
-    createApp: createAppAPI(render, hydrate)
+    createApp: createAppAPI(render, hydrate) // vue初始化时用到的属性
   }
 }
 

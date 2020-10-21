@@ -8,7 +8,10 @@ if (!process.env.TARGET) {
 }
 
 const masterVersion = require('./package.json').version
+// 包目录
 const packagesDir = path.resolve(__dirname, 'packages')
+// 需要打包模块目录 参数来自/scripts/dev.js
+// /packages/vue
 const packageDir = path.resolve(packagesDir, process.env.TARGET)
 const name = path.basename(packageDir)
 const resolve = p => path.resolve(packageDir, p)
@@ -19,6 +22,7 @@ const packageOptions = pkg.buildOptions || {}
 let hasTSChecked = false
 
 const outputConfigs = {
+  //webpack esm 格式
   'esm-bundler': {
     file: resolve(`dist/${name}.esm-bundler.js`),
     format: `es`
@@ -27,10 +31,12 @@ const outputConfigs = {
     file: resolve(`dist/${name}.esm-browser.js`),
     format: `es`
   },
+  // nodejs cjs
   cjs: {
     file: resolve(`dist/${name}.cjs.js`),
     format: `cjs`
   },
+  // 浏览器 umd
   global: {
     file: resolve(`dist/${name}.global.js`),
     format: `iife`
@@ -52,6 +58,7 @@ const outputConfigs = {
 }
 
 const defaultFormats = ['esm-bundler', 'cjs']
+// 打包格式 format 参数
 const inlineFormats = process.env.FORMATS && process.env.FORMATS.split(',')
 const packageFormats = inlineFormats || packageOptions.formats || defaultFormats
 const packageConfigs = process.env.PROD_ONLY
@@ -74,6 +81,7 @@ if (process.env.NODE_ENV === 'production') {
 
 export default packageConfigs
 
+// 创建配置
 function createConfig(format, output, plugins = []) {
   if (!output) {
     console.log(require('chalk').yellow(`invalid format: "${format}"`))
@@ -114,6 +122,9 @@ function createConfig(format, output, plugins = []) {
   // during a single build.
   hasTSChecked = true
 
+  // 入口文件
+  // runtime 带即时编译模块
+  // /packages/vue/src/index.js
   const entryFile = /runtime$/.test(format) ? `src/runtime.ts` : `src/index.ts`
 
   const external =

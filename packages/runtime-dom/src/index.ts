@@ -29,6 +29,7 @@ let renderer: Renderer<Element> | HydrationRenderer
 
 let enabledHydration = false
 
+// 创建一个渲染器
 function ensureRenderer() {
   return renderer || (renderer = createRenderer<Node, Element>(rendererOptions))
 }
@@ -50,6 +51,7 @@ export const hydrate = ((...args) => {
   ensureHydrationRenderer().hydrate(...args)
 }) as RootHydrateFunction
 
+// 创建实例 扩展默认的createApp
 export const createApp = ((...args) => {
   const app = ensureRenderer().createApp(...args)
 
@@ -57,13 +59,14 @@ export const createApp = ((...args) => {
     injectNativeTagCheck(app)
   }
 
+  // 扩展mount方法
   const { mount } = app
   app.mount = (containerOrSelector: Element | string): any => {
-    const container = normalizeContainer(containerOrSelector)
+    const container = normalizeContainer(containerOrSelector) //默认的挂载
     if (!container) return
     const component = app._component
     if (!isFunction(component) && !component.render && !component.template) {
-      component.template = container.innerHTML
+      component.template = container.innerHTML //把挂载根dom里的内容 作为vue模板
     }
     // clear content before mounting
     container.innerHTML = ''

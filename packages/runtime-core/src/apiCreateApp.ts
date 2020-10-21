@@ -120,6 +120,7 @@ export type CreateAppFunction<HostElement> = (
 
 let uid = 0
 
+// 闭包render hydrate参数
 export function createAppAPI<HostElement>(
   render: RootRenderFunction,
   hydrate?: RootHydrateFunction
@@ -135,6 +136,7 @@ export function createAppAPI<HostElement>(
 
     let isMounted = false
 
+    // app实例对象 (vue实例)
     const app: App = (context.app = {
       _uid: uid++,
       _component: rootComponent as ConcreteComponent,
@@ -156,6 +158,12 @@ export function createAppAPI<HostElement>(
         }
       },
 
+      // 可以在实例上调用 vue 框架定义 的方法
+      // 2.0通过 Vue.component 调用
+      // 3.0通过 app.compontnt 调用 //实例调用 链式调用
+      // 1. 2.0通过 Vue.component 调用直接挂载在 Vue class上了 后面new出来的实例都是一样的
+      // 2. 通过Vue引用 component 或者 directive 就直接吧包引入进来了 // todo 为什么
+      // app实例和组件实例不一样
       use(plugin: Plugin, ...options: any[]) {
         if (installedPlugins.has(plugin)) {
           __DEV__ && warn(`Plugin has already been applied to target app.`)
@@ -224,10 +232,12 @@ export function createAppAPI<HostElement>(
         return app
       },
 
+      // 初始化
       mount(rootContainer: HostElement, isHydrate?: boolean): any {
         if (!isMounted) {
+          // 构造vnode
           const vnode = createVNode(
-            rootComponent as ConcreteComponent,
+            rootComponent as ConcreteComponent, //断言
             rootProps
           )
           // store app context on the root VNode.
@@ -244,6 +254,7 @@ export function createAppAPI<HostElement>(
           if (isHydrate && hydrate) {
             hydrate(vnode as VNode<Node, Element>, rootContainer as any)
           } else {
+            // 渲染出dom (将vnode转换为real dom 并挂载到rootContainer上
             render(vnode, rootContainer)
           }
           isMounted = true

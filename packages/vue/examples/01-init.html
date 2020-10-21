@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>01 Vue.createApp后发生了什么</title>
+</head>
+<body>
+    01 Vue.createApp后发生了什么
+    <div id="app"></div>
+    <script src="../dist/vue.global.js"></script>
+    <script>
+        debugger
+        // vue2 使用 new Vue({}) 初始化
+        Vue.createApp({
+            // vue2 使用el/template/render/属性
+            data(){
+                return{
+                    title:"title"
+                }
+            }
+        })
+        .component('comp',{
+            template:'<div>comp</div>'
+        })
+        .mount("#app")
+    </script>
+</body>
+</html>

@@ -17,13 +17,17 @@ __DEV__=false yarn dev
 */
 
 const execa = require('execa')
+const { exit } = require('process')
 const { fuzzyMatchTarget } = require('./utils')
+// 获得package.json scripts{} 命令行参数 构造为对象
 const args = require('minimist')(process.argv.slice(2))
 const target = args._.length ? fuzzyMatchTarget(args._)[0] : 'vue'
+// 从参数对象获取标志
 const formats = args.formats || args.f
 const sourceMap = args.sourcemap || args.s
 const commit = execa.sync('git', ['rev-parse', 'HEAD']).stdout.slice(0, 7)
 
+// 构造rollup打包执行参数
 execa(
   'rollup',
   [
